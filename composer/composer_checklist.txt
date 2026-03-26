@@ -1,0 +1,32 @@
+## Checklist: DAG en Composer con Dataflow
+
+**1. Preparar el entorno**
+- [ ] Tener el script de Apache Beam listo y funcionando localmente
+- [ ] Tener el bucket de GCS creado
+- [ ] Tener el entorno de Composer creado
+- [ ] Tener la API de Dataflow habilitada
+
+**2. Crear el Dataflow Template**
+- [ ] Autenticarse con `gcloud auth application-default login`
+- [ ] Correr el script con los flags de Dataflow desde CMD:
+```
+python movefile.py --runner DataflowRunner --project TU_PROYECTO --region us-central1 --staging_location gs://TU_BUCKET/staging --temp_location gs://TU_BUCKET/temp --template_location gs://TU_BUCKET/templates/NOMBRE_TEMPLATE
+```
+- [ ] Verificar que el template aparece en GCS (`templates/NOMBRE_TEMPLATE`)
+
+**3. Crear el DAG**
+- [ ] Usar `DataflowTemplatedJobStartOperator` (no BashOperator)
+- [ ] Apuntar el `template` a la ruta GCS del template
+- [ ] Agregar `serviceAccountEmail` en `dataflow_default_options` si hay restricciones de Org Policy
+
+**4. Permisos IAM**
+- [ ] Cuenta de servicio tiene rol `Dataflow Admin`
+- [ ] Cuenta de servicio tiene rol `Administrador de almacenamiento`
+- [ ] Cuenta de servicio tiene rol `Trabajador de Dataflow`
+- [ ] Cuenta de servicio tiene rol `Service Account User`
+
+**5. Subir y activar el DAG**
+- [ ] Subir el `.py` del DAG a `gs://BUCKET_COMPOSER/dags/`
+- [ ] Esperar 2-5 minutos
+- [ ] Activar el DAG en la Airflow UI
+- [ ] Hacer Trigger y verificar logs si falla
